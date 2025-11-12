@@ -1,0 +1,69 @@
+const express=require('express');
+const app =express();
+
+app.set('view engine','ejs')
+
+app.use(express.urlencoded())
+
+let student=[
+    {
+        id:1,
+        name:'Urvish'
+    },
+    {
+        id:2,
+        name:'Dharmik'
+    }
+];
+
+app.get('/',(req,res)=>{
+    res.render('home',{student})
+})
+
+app.post('/insertData',(req,res)=>{
+    const{id,name}=req.body;
+
+    const obj={
+        id:Number(id),
+        name
+    };
+
+    student.push(obj);
+    res.redirect('/')
+})
+
+app.get('/delete',(req,res)=>{
+    const id = Number(req.query.id)
+
+    student=student.filter((el)=>el.id!==id)
+
+    res.redirect('/')
+})
+
+app.get('/edit',(req,res)=>{
+    const id=Number(req.query.id)
+
+    const editData=student.find((el)=>el.id==id)
+
+    res.render('edit',{
+        editData
+    })
+})
+
+app.post('/editData',
+    (req,res)=>{
+        const{id,name}=req.body
+
+        student=student.map((el)=>{
+            if(el.id==id){
+                el.name=name
+            }
+            return el
+        })
+
+        res.redirect('/')
+    }
+)
+app.listen(4000, () => {
+    console.log("server listen");
+});
