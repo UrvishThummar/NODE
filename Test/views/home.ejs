@@ -33,9 +33,10 @@
             <td><%= el.id %></td>
             <td><%= el.name %></td>
 
+            <!-- Correct output tag here -->
             <td><a href="/delete?id=<%= el.id %>">Delete</a></td>
 
-            <td><a href="/Edit?id=<%= el.id %>">Edit</a></td>
+            <td><a href="/edit?id=<%= el.id %>">Edit</a></td>
         </tr>
         <% }) %>
     </table>

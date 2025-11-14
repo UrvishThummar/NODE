@@ -4,7 +4,8 @@ const app = express();
 
 app.set("view engine", "ejs");
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded());
+app.use(express.static(__dirname+'/public'))
 
 let student = [
     {
@@ -20,6 +21,11 @@ let student = [
 app.get("/", (req, res) => {
     res.render("home", { student });
 });
+
+app.get("/index", (req, res) => {
+    res.render("index");
+});
+
 
 app.post("/insertData", (req, res) => {
     const { id, name } = req.body;

@@ -1,69 +1,73 @@
-const express=require('express');
-const app =express();
+const express = require("express");
 
-app.set('view engine','ejs')
+const app = express();
 
-app.use(express.urlencoded())
+app.set("view engine", "ejs");
 
-let student=[
+app.use(express.urlencoded());
+app.use(express.static(__dirname+'/public'))
+
+let student = [
     {
-        id:1,
-        name:'Urvish'
+        id: 1,
+        name: "sunaina"
     },
     {
-        id:2,
-        name:'Dharmik'
+        id: 2,
+        name: "jyoti"
     }
 ];
 
-app.get('/',(req,res)=>{
-    res.render('home',{student})
-})
+app.get("/", (req, res) => {
+    res.render("home", { student });
+});
 
-app.post('/insertData',(req,res)=>{
-    const{id,name}=req.body;
+app.get("/index", (req, res) => {
+    res.render("index");
+});
 
-    const obj={
-        id:Number(id),
+
+app.post("/insertData", (req, res) => {
+    const { id, name } = req.body;
+
+    const obj = {
+        id: Number(id),
         name
     };
 
     student.push(obj);
-    res.redirect('/')
-})
+    res.redirect("/");
+});
 
-app.get('/delete',(req,res)=>{
-    const id = Number(req.query.id)
+app.get("/delete", (req, res) => {
+    const id = Number(req.query.id);
 
-    student=student.filter((el)=>el.id!==id)
+    student = student.filter((el) => el.id !== id);
 
-    res.redirect('/')
-})
+    res.redirect("/");
+});
 
-app.get('/edit',(req,res)=>{
-    const id=Number(req.query.id)
+app.get("/Edit", (req, res) => {
+    const id = Number(req.query.id);
 
-    const editData=student.find((el)=>el.id==id)
+    const editdata = student.find((el) => el.id === id);
 
-    res.render('edit',{
-        editData
-    })
-})
+    res.render("edit", { editdata });
+});
 
-app.post('/editData',
-    (req,res)=>{
-        const{id,name}=req.body
+app.post("/editData", (req, res) => {
+    const { id, name } = req.body;
 
-        student=student.map((el)=>{
-            if(el.id==id){
-                el.name=name
-            }
-            return el
-        })
+    student = student.map((el) => {
+        if (el.id == id) {
+            el.name = name;
+        }
+        return el;
+    });
 
-        res.redirect('/')
-    }
-)
-app.listen(4000, () => {
+    res.redirect("/");
+});
+
+app.listen(3000, () => {
     console.log("server listen");
 });
