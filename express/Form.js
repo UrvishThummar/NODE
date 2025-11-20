@@ -5,7 +5,7 @@ const app = express();
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded());
-app.use(express.static(__dirname+'/public'))
+app.use(express.static(__dirname + '/public'))
 
 let student = [
     {
@@ -18,11 +18,16 @@ let student = [
     }
 ];
 
+const middleware = ((req, res, next) => {
+    if (req.query.age >= 18) {
+        next()
+    }
+})
 app.get("/", (req, res) => {
     res.render("home", { student });
 });
 
-app.get("/index", (req, res) => {
+app.get("/index", middleware, (req, res) => {
     res.render("index");
 });
 
@@ -67,6 +72,8 @@ app.post("/editData", (req, res) => {
 
     res.redirect("/");
 });
+
+app.use(middleware)
 
 app.listen(3000, () => {
     console.log("server listen");
