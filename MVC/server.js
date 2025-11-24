@@ -2,7 +2,7 @@ const express = require('express')
 const db = require('./config/db')
 const user = require('./model/usermodel')
 const app = express()
-
+     
 app.use(express.json())
 app.set('view engine', 'ejs')
 
@@ -22,7 +22,6 @@ app.get('/', async (req, res) => {
         return res.send(user1)
     } catch (error) {
         res.send(err)
-
     }
 })
 

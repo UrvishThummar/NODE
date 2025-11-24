@@ -1,52 +1,62 @@
-const express = require('express')
-const db = require('./config/db')
-const app = express()
+const express = require('express');
+const path = require('path');
+const db = require('./config/db');              // MongoDB connection
+const User = require('./userModel/usermodel');  // Mongoose model
+const multer = require('multer');
 
-const user = require('./userModel/usermodel')
+const app = express();
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.set('view engine', 'ejs')
+app.use('/upload', express.static(path.join(__dirname, 'upload')));
 
-// Insert Data
-app.post('/insertData', async (req, res) => {
-    try {
-        const data = await user.create(req.body)
-        res.send(data)
-    } catch (err) {
-        res.send(err)
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'upload/');   
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
     }
-})
+});
 
-// Show Data on Home Page
+const upload = multer({ storage: storage });
+
+
 app.get('/', async (req, res) => {
     try {
-        const user1 = await user.find({})
-        // Send data to EJS
-        // res.render('home', { user1 })
-    return res.send(user1)
+        const user1 = await User.find({});
+        // console.log("All users:", user1);
+        res.render('home', { user1 });
     } catch (err) {
-        res.send(err)
+        console.log(err);
+        res.send(err);
     }
-})
+});
 
-app.delete("/:id",async(req,res)=>{
-    const id=req.params.id
-    const data=await user.findByIdAndDelete(id)
-    res.send("success")
-})
-
-app.patch("/:id", async (req, res) => {
+app.post('/insertData', upload.single('image'), async (req, res) => {
     try {
-       const id = req.params.id;
-      const data= await user.findByIdAndUpdate(id, req.body);
-       res.send(data);
+        // Check what is coming
+        console.log("Body:", req.body);
+        console.log("File:", req.file);
+
+        const { username, password } = req.body;
+        const image = req.file ? req.file.filename : '';
+
+        await User.create({ username, password, image });
+
+        res.redirect('/');
     } catch (err) {
-       res.send(err);
+        console.log(err);
+        res.send(err);
     }
- });
+});
+
 
 app.listen(3180, () => {
-    console.log('Server Listening on 3180')
-})
+    console.log('Server Listening on 3180');
+});
