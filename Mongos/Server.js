@@ -1,62 +1,81 @@
-const express = require('express');
-const path = require('path');
-const db = require('./config/db');              // MongoDB connection
-const User = require('./userModel/usermodel');  // Mongoose model
-const multer = require('multer');
+const express = require("express")
+const db = require("./config/db")
+const multer = require('multer')
+const path = require('path')
+const app = express()
 
-const app = express();
+const user = require('./userModel/usermodel')
 
-// Body parsers
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
+app.use(express.urlencoded(({ extended: true })))
 
-app.use('/upload', express.static(path.join(__dirname, 'upload')));
+app.use('/upload', express.static(path.join(__dirname, 'upload')))
+app.set('view engine', 'ejs')
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+// app.post('/insertData', async (req, res) => {
+//     try {
+//         const data = await user.create(req.body)
+//         res.send(data)
+//     } catch (err) {
+//         res.send(err)
+//     }
+// })
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'upload/');   
+        cb(null, 'upload/')
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname);
+
+        cb(null, file.originalname)
     }
-});
+})
 
-const upload = multer({ storage: storage });
+const ImageUpload = multer({ storage: storage }).single('image')
 
+
+app.post('/insertData', ImageUpload, async (req, res) => {
+    const { username, password } = req.body
+    let image = ""
+    if (req.file) {
+        image = req.file.path
+    }
+    await user.create({
+        username: username,
+        password: password,
+        image: image
+    }).then((data) => {
+        console.log(data)
+    }).catch((err) => {
+        console.log(err)
+    })
+})
 
 app.get('/', async (req, res) => {
+   await user.find({}).then((data)=>{
+    res.render("home",{data})
+   }).catch((err)=>{
+    console.log(err)
+   })
+})
+
+app.delete("/:id", async (req, res) => {
+
+    const id = req.params.id
+    const data = await user.findByIdAndDelete(id)
+    res.send("success")
+})
+
+app.patch("/:id", async (req, res) => {
     try {
-        const user1 = await User.find({});
-        // console.log("All users:", user1);
-        res.render('home', { user1 });
+        const id = req.params.id;
+        const data = await user.findByIdAndUpdate(id, req.body);
+        res.send(data);
     } catch (err) {
-        console.log(err);
         res.send(err);
     }
 });
-
-app.post('/insertData', upload.single('image'), async (req, res) => {
-    try {
-        // Check what is coming
-        console.log("Body:", req.body);
-        console.log("File:", req.file);
-
-        const { username, password } = req.body;
-        const image = req.file ? req.file.filename : '';
-
-        await User.create({ username, password, image });
-
-        res.redirect('/');
-    } catch (err) {
-        console.log(err);
-        res.send(err);
-    }
-});
-
 
 app.listen(3180, () => {
-    console.log('Server Listening on 3180');
-});
+    console.log("server listen")
+})

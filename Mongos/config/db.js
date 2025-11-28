@@ -1,12 +1,12 @@
-const mongoos=require('mongoose')
+const mongoos = require('mongoose')
 mongoos.connect('mongodb://localhost:27017')
 
-const db=mongoos.connection
+const db = mongoos.connection
 
-db.on('connected',(err,data)=>{
-    if(err){
+db.on('connected', (err, data) => {
+    if (err) {
         console.log('err')
-    }else{
+    } else {
         console.log('database Connected')
     }
 })

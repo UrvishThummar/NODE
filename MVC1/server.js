@@ -1,12 +1,20 @@
 const express = require('express')
 const db = require('./config/db')
 const user = require('./model/usermodel')
+const product = require('./model/productModel')
+const category=require('./model/categoryModel')
 const U_router = require('./Routes/userRouter')
+const p_router = require('./Routes/productRouter')
+const c_router = require('./Routes/cetagoryRouter')
+const B_router=require('./Routes/BookRoute')
 
 const app = express()
 app.use(express.json())
 app.use('/user', U_router)
+app.use('/product', p_router)
+app.use('/category', c_router)
+app.use('/Book', B_router)
 
 app.listen(4000, () => {
     console.log('Server listen')
-})
+})                                                     
