@@ -7,7 +7,7 @@ const user=require('./usermodel/usermodel')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use('/upload', express.static(path.join(__dirname, 'upload')))
+app.use('/upload', express.static(path.join(__dirname, 'upload')))     
 
 app.set('view engine', 'ejs')
 

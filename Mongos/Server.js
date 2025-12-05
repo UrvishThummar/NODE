@@ -5,7 +5,7 @@ const path = require('path')
 const app = express()
 
 const user = require('./userModel/usermodel')
-
+    
 app.use(express.json())
 app.use(express.urlencoded(({ extended: true })))
 
@@ -46,6 +46,7 @@ app.post('/insertData', ImageUpload, async (req, res) => {
         image: image
     }).then((data) => {
         console.log(data)
+        res.redirect('/')
     }).catch((err) => {
         console.log(err)
     })

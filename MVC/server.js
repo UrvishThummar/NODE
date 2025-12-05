@@ -6,20 +6,53 @@ const app = express()
 app.use(express.json())
 app.set('view engine', 'ejs')
 
-app.post('/insertData', async (req, res) => {
+app.use(express.urlencoded({ extended: true }));
+
+
+app.post('/register', async (req, res) => {
     try {
         const data = await user.create(req.body)
+        return res.redirect('/login');
+
         res.send(data)
     } catch (error) {
         res.send(error)
     }
 })
 
+
+app.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.send("Username and Password required");
+        }
+
+        const user1 = await user.findOne({ username });
+
+        if (!user1) {
+            return res.send("Invalid username");
+        }
+
+        if (user1.password !== password) {
+            return res.send("Invalid password");
+        }
+
+        res.send("Login success!");
+
+    } catch (error) {
+        console.log(error);
+        res.send("Something went wrong");
+    }
+});
+
+
 app.get('/', async (req, res) => {
     try {
         const user1 = await user.find({})
-        // res.render('home', { user1 })
-        return res.send(user1)
+        res.render('login', { user1 })
+        // return res.send(user1)
     } catch (error) {
         res.send(err)
     }
